@@ -58,7 +58,7 @@ class PeriodicPositionalEncoding(nn.Module):
     def forward(self, x):
         x = x + self.pe[:, :x.size(1), :]
         return self.dropout(x)
-
+import os
 class Faceformer(nn.Module):
     def __init__(self, args):
         super(Faceformer, self).__init__()
@@ -68,7 +68,11 @@ class Faceformer(nn.Module):
         vertice: (batch_size, seq_len, V*3)
         """
         self.dataset = args.dataset
-        self.audio_encoder = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-base-960h")
+        # self.audio_encoder = Wav2Vec2Model.from_pretrained("facebook/wav2vec2-base-960h")
+        self.audio_encoder = Wav2Vec2Model.from_pretrained(
+        os.environ["WAV2VEC_PATH"]  # 或者直接硬编码路径
+        # "/home/tang20/Codes/FacialGeneration/wav2vec2-base-960h"
+        ) 
         # wav2vec 2.0 weights initialization
         self.audio_encoder.feature_extractor._freeze_parameters()
         self.audio_feature_map = nn.Linear(768, args.feature_dim)

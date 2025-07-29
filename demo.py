@@ -1,3 +1,6 @@
+import os
+os.environ["PYOPENGL_PLATFORM"] = "egl"  # 如果 EGL 不可用可改为 "osmesa"
+
 import numpy as np
 import scipy.io.wavfile as wav
 import librosa
@@ -50,7 +53,11 @@ def test_model(args):
     wav_path = args.wav_path
     test_name = os.path.basename(wav_path).split(".")[0]
     speech_array, sampling_rate = librosa.load(os.path.join(wav_path), sr=16000)
-    processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
+    # processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
+    processor = Wav2Vec2Processor.from_pretrained(
+    os.environ["WAV2VEC_PATH"]  # 或者直接硬编码路径
+    # "/home/tang20/Codes/FacialGeneration/wav2vec2-base-960h"
+    )
     audio_feature = np.squeeze(processor(speech_array,sampling_rate=16000).input_values)
     audio_feature = np.reshape(audio_feature,(-1,audio_feature.shape[0]))
     audio_feature = torch.FloatTensor(audio_feature).to(device=args.device)
